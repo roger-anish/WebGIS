@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <!-- leaflet measure -->
+    <link rel="stylesheet" href="/leaflet-measure/scss/leaflet-measure.css" />
+    <!-- master cluster -->
+    <link
+      rel="stylesheet"
+      href="/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css"
+    />
+    <!-- leaflet geocoder -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+    />
+    <!-- bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+    />
+    <!-- external css, (alyz at the last) -->
+    <link rel="stylesheet" href="/dist/style.css" />
+    <title>GeoDjango 2021</title>
+  </head>
+  <style></style>
+
+  <body>
+    <!-- navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-info">
+      <a class="navbar-brand" href="#">Web-GIS</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Upload Data</a>
+          </li>
+           <!-- <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </li>
+          <li class="nav-item">
+              <a class="nav-link disabled" href="#">Disabled</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>  -->
+      </div>
+    </nav>
+
+    <!-- sidebar -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3 left-sidebar">
+          <div class="card-body layer-card">
+            <div class="row">
+              <div class="col-4 thumbnails">
+                <img src="/data/bagmati1.JPG" alt="" class="image-fluid">
+              </div>
+              <div class="col-8">
+                <div style="display: flex; justify-content: space-between;">
+                  <span class="d-block mt-2 layer-title">Bagmati</span>
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input layer-card-cb" id="bagmati-layer" >
+                    <label class="custom-control-label" for="customSwitch1"></label>
+                  </div>
+                </div>
+                <div class="description">Choropleth Map of Bagmati province </div>
+              </div>
+              <div style="display:flex">
+                <label for="opacity">
+                  <b class="mr-5 mt-2">Opacity</b>
+                </label>
+                <input type="range" class="fore-control-range opacity" value="100" min="0" max="100" data-toggle="tooltip" title="Opacity">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-9" id="map">
+          <!-- mouse coordinate -->
+          <div class="leaflet-control map-coordinate">
+            <!--leaflet-control fn for countering opacity-->
+            <div class="coordinate"></div>
+          </div>
+          <!-- full screen -->
+          <div class="leaflet-control full-screen" onclick="fullscreenView()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              class="bi bi-arrows-fullscreen"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"
+              />
+            </svg>
+          </div>
+          <!-- default zoom -->
+          <div class="leaflet-control default-zoom">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              fill="currentColor"
+              class="bi bi-house-door"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <button onclick="fullscreenView()">full screen</button> -->
+    <!-- <button class="print-map">Print map</button> -->
+    <!-- <button class="default-zoom">Default Zoom</button> -->
+  </body>
+</html>
+
+<!-- bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- leaflet -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<!-- jquery cdn  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- responsive print function -->
+<script src="/leaflet.browser.print/dist/leaflet.browser.print.min.js"></script>
+<!-- measure area and length -->
+<script src="/leaflet-measure/src/leaflet-measure.js"></script>
+<!-- marker cluster -->
+<script src="/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster-src.js"></script>
+<!-- leaflet geocoder -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<!-- leaflet-geoserver-request -->
+<script src="/leaflet-geoserver-request/src/L.Geoserver.js"></script>
+<!-- marker cluster geojson data -->
+<script src="/data/test.js"></script>
+<!-- geojson data -->
+<script src="./data/Bagmati_geoserver.js"></script>
+<!-- external scripts, must be in order -->
+<script src="./dist/main.js"></script>
+<script src="./dist/webGIS.js"></script>
+<script></script>
+
+<!-- mind the order of js file.. data script should be mentioned first then external -->
